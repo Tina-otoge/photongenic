@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Project PHOTONGENIC</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <p>
+            <a href="{{ photon.config.output_web }}">Output folder</a>
+        </p>
+        <div class="row">
+            {% for client in photon.clients.values() %}
+            <div class="client card col s4" data-id="{{ client.id }}">
+                <div class="card-content">
+                    <div class="card-title">{{ client.name }} (#{{ client.id }})</div>
+                    <div class="results">
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a class="export">Export</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+    <script>
+        for (let client of document.querySelectorAll('.client')) {
+            client.querySelector('.export').addEventListener('click', async () => {
+                let result = client.querySelector('.results');
+                result.innerHTML = 'Exporting...';
+                let response = await fetch(`${client.dataset.id}/export`, { method: 'POST' });
+                let json = await response.json();
+                result.innerHTML = `<a href="${json.url}">Download export</a>`;
+            });
+        }
+    </script>
+</body>
+
+</html>

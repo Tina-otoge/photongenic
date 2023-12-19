@@ -1,0 +1,4 @@
+flask
+obsws-python
+tomli
+pyyaml
