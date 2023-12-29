@@ -10,6 +10,7 @@ import photon
 OK = flask.Response(status=200)
 
 app = Flask(__name__)
+app.config["APPLICATION_ROOT"] = photon.config.get("base_uri")
 custom = Blueprint("custom", __name__, static_folder="../custom")
 archive_files = Blueprint(
     "archive", __name__, static_folder=archive.File.DIR, url_prefix="/archive"

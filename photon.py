@@ -69,8 +69,12 @@ class Client:
 class Config:
     def __init__(self, path):
         with path.open("rb") as f:
-            for k, v in tomli.load(f).items():
-                setattr(self, k, v)
+            self._config = tomli.load(f)
+        for k, v in self._config.items():
+            setattr(self, k, v)
+
+    def get(self, *args, **kwargs):
+        return self._config.get(*args, **kwargs)
 
 
 CLIENTS_FILE = Path("clients.yml")
