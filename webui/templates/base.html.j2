@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Project PHOTONGENIC</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <p id="site-actions">
+            <a href="{{ url_for('index') }}">Dashboard</a>
+            <a href="{{ url_for('get_archive') }}">Archive</a>
+        </p>
+
+        {% block content %}
+        {% endblock %}
+
+        <script>
+            document.querySelectorAll('[data-time]').forEach(el => {
+                var time = luxon.DateTime.fromISO(el.dataset.time.replace(' ', 'T'));
+                el.innerHTML = time.toRelative();
+            });
+        </script>
+</body>
+
+</html>

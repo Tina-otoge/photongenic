@@ -5,3 +5,37 @@ body {
 a {
     cursor: pointer;
 }
+
+img {
+    max-width: 100%;
+}
+
+.card-image .card-title {
+    color: #fff;
+    text-shadow: 2px 2px 4px #000000;
+}
+
+.card-image img {
+    filter: brightness(75%);
+}
+
+.client.active .state {
+    color: darkgreen;
+    font-weight: bold;
+}
+
+.client.inactive .state {
+    color: darkred;
+}
+
+.client.active .wake {
+    display: none;
+}
+
+#site-actions > * {
+    margin: 0 1em;
+}
+
+#archive .thumb {
+    max-height: 300px;
+}

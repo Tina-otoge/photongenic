@@ -1,9 +1,11 @@
+import dataclasses
 from dataclasses import dataclass
 from pathlib import Path
 
 import obsws_python as obs
 import tomli
 import yaml
+from websocket import WebSocketAddressException
 
 
 @dataclass
@@ -16,18 +18,26 @@ class Client:
     name: str = "Client"
     collection: str = "Photon"
     scene: str = "Photon"
+    image: str = None
 
     count = 0
 
     def __post_init__(self):
         self.count += 1
         self.id = self.count
-        self.client = obs.ReqClient(
-            host=self.host,
-            port=self.port,
-            password=self.password,
-            timeout=self.timeout,
-        )
+        self.client = None
+
+    def start(self):
+        try:
+            self.client = obs.ReqClient(
+                host=self.host,
+                port=self.port,
+                password=self.password,
+                timeout=self.timeout,
+            )
+        except (TimeoutError, WebSocketAddressException) as e:
+            print(f"Could not establish connection to {self}: {e}")
+            return
         if (
             self.replay
             and not self.client.get_replay_buffer_status().output_active
@@ -44,7 +54,16 @@ class Client:
         ]:
             self.client.set_current_program_scene(self.scene)
 
-        print(self.client.get_last_replay_buffer_replay().saved_replay_path)
+    @property
+    def status(self) -> dict:
+        if not self.client:
+            active = False
+        else:
+            active = self.client.get_replay_buffer_status().output_active
+        return dict(
+            **dataclasses.asdict(self),
+            active=active,
+        )
 
 
 class Config:

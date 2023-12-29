@@ -14,6 +14,7 @@ current directory, for example:
 - host: 192.168.0.15
   password: xxxx
   name: "PC 2"
+  image: my_pc.png
 ```
 
 Valid attributes are:
@@ -29,15 +30,18 @@ Valid attributes are:
   in the client, the client will switch to it right after connecting
 - `scene` (default "Photon"), if a Scene witht his name exists in the client,
   the client will switch to it right after connecting
+- `image` (default: None), a custom image placed in the "custom" folder at the
+  same level than the app root
 
-You must define a valid URL where URL + filename of the last replay serves the
-file to clients in a `config.toml` file.
+You must define the output directory where replays exported from OBS end. This
+does not configure OBS. This only tells PHOTONGENIC where to search for files so
+they can be served from the Web UI.
 
 Example:
 
 ```toml
-output_web = "https://replay-service.com/replays"
+output_local = "/mnt/r/Tinarcade/Replays"
 ```
 
-After exporting a replay, the user will be presented with a link in the form of
-"output_web" + "/" + "filename of the last replay".
+You can put replays in subdirectories, in this case, the latest parent
+directory name will be treated as the "group" for this replay.

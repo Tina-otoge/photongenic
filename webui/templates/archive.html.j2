@@ -1,0 +1,28 @@
+{% extends "base.html.j2" %}
+
+{% block content %}
+<div class="row" id="archive">
+
+    <h1>Archive</h1>
+
+    {% for file in files %}
+    <div class="col m12 l6">
+        <div class="card-panel">
+            <div class="row">
+                <div class="col m4">
+                    {% if file.thumb %}
+                    <img class="thumb" src="{{ url_for('archive.static', filename=file.thumb_relative) }}">
+                    {% endif %}
+                </div>
+                <div class="col m8">
+                    <p>{{ file.relative }}</p>
+                    <p data-time="{{ file.date }}">{{ file.date }}</p>
+                    <p>{{ file.group }}</p>
+                    <a href="{{ url_for('archive.static', filename=file.relative) }}" class="btn">Download</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

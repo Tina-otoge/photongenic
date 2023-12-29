@@ -2,13 +2,21 @@ import datetime
 from pathlib import Path
 
 import flask
+from flask import Blueprint, Flask
 
+import archive
 import photon
 
-Flask = flask.Flask
 OK = flask.Response(status=200)
 
-app = Flask(__name__, template_folder=".")
+app = Flask(__name__)
+custom = Blueprint("custom", __name__, static_folder="../custom")
+archive_files = Blueprint(
+    "archive", __name__, static_folder=archive.File.DIR, url_prefix="/archive"
+)
+
+app.register_blueprint(custom)
+app.register_blueprint(archive_files)
 
 
 @app.context_processor
@@ -18,7 +26,13 @@ def inject_globals():
 
 @app.route("/")
 def index():
-    return flask.render_template("template.html")
+    return flask.render_template("dashboard.html.j2")
+
+
+@app.get("/<int:id>/")
+def status(id):
+    client: photon.Client = photon.clients[id]
+    return client.status
 
 
 @app.post("/<int:id>/export")
@@ -43,3 +57,25 @@ def export(id):
     return {
         "url": photon.config.output_url + dest_name,
     }
+
+
+@app.post("/<int:id>/wake")
+def wake(id):
+    client: photon.Client = photon.clients[id]
+    client.start()
+    return {
+        "success": client.client is not None,
+    }
+
+
+@app.post("/wake_all")
+def wake_all():
+    for client in photon.clients.values():
+        client.start()
+    return OK
+
+
+@app.get("/archive")
+def get_archive():
+    files = archive.get_files()
+    return flask.render_template("archive.html.j2", files=files)
