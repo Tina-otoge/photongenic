@@ -45,3 +45,28 @@ output_local = "/mnt/r/Tinarcade/Replays"
 
 You can put replays in subdirectories, in this case, the latest parent
 directory name will be treated as the "group" for this replay.
+
+## Running
+
+There are 3 main components in PHOTONGENIC.
+
+- A Python module called `photon`, which is effectively the "OBS controller"
+  and allows for controlling clients
+- A Python module called `archive` which is used to read from the output folder
+  where the replays end, and can also be run on its own to instantiate a worker
+  that will generare thumbnails for videos
+- A WSGI app in Flask that exposes a Web UI to control the clients from a web
+  interface
+
+Running the Web UI can be done this way:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+# Flask debug mode for local development
+FLASK_APP=webui.app flask run --debug
+# gunicorn for production
+pip install gunicorn
+gunicorn -w 4 webui.app:app
+```
