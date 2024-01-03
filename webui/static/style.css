@@ -28,6 +28,10 @@ img {
     color: darkred;
 }
 
+.client.inactive .preview {
+    display: none;
+}
+
 .client.active .wake {
     display: none;
 }
@@ -38,4 +42,8 @@ img {
 
 #archive .thumb {
     max-height: 300px;
+}
+
+#preview {
+    max-height: calc(100vh - 200px);
 }

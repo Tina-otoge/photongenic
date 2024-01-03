@@ -41,10 +41,16 @@ def preview(id):
     return flask.render_template("preview.html.j2", client=photon.clients[id])
 
 
-@app.get("/<int:id>/preview.png")
+@app.get("/<int:id>/preview/frame")
 def get_preview_frame(id):
     client: photon.Client = photon.clients[id]
-    # return client.client.
+    source = (
+        client.client.get_current_program_scene().current_program_scene_name
+    )
+    encoded_base64_image = client.client.get_source_screenshot(
+        source, "png", None, None, None
+    ).image_data
+    return encoded_base64_image
 
 
 @app.post("/<int:id>/export")
@@ -55,9 +61,7 @@ def export(id):
         client.client.get_last_replay_buffer_replay().saved_replay_path
     )
     src = Path(replay_path)
-    return {
-        "url": f"{photon.config.output_web}/{src.name}",
-    }
+    return OK
 
     # Moving the file does not make sense if the server and the client are
     # running on different machines. Will maybe need an agent on the client.

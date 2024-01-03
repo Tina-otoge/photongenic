@@ -26,6 +26,7 @@ class Client:
         self.__class__.count += 1
         self.id = self.count
         self.client = None
+        self.start()
 
     def start(self):
         try:

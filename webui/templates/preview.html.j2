@@ -1,0 +1,25 @@
+{% extends "base.html.j2" %}
+
+{% block content%}
+<div class="row">
+
+    <h1>Preview: {{ client.name }}(#{{ client.id }})</h1>
+
+    <div class="col s12">
+        <img id="preview" src="">
+    </div>
+
+</div>
+
+<script>
+async function refreshImage() {
+    setTimeout(refreshImage, 2000);
+    let img = document.getElementById('preview');
+    let response = await fetch('preview/frame');
+    let base64 = await response.text();
+    img.src = base64;
+};
+refreshImage();
+</script>
+
+{% endblock %}

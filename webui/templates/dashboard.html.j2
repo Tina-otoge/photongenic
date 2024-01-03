@@ -33,6 +33,7 @@
             <div class="card-action">
                 <a class="export">Export</a>
                 <a class="wake">Wake</a>
+                <a class="preview" href="{{ url_for('preview', id=client.id) }}">Preview</a>
             </div>
         </div>
     </div>
@@ -55,8 +56,9 @@
         client.querySelector('.export').addEventListener('click', async () => {
             result.innerHTML = 'Exporting...';
             let response = await fetch(`${client.dataset.id}/export`, { method: 'POST' });
-            let json = await response.json();
-            result.innerHTML = `<a href="${json.url}">Download export</a>`;
+            // let json = await response.json();
+            // result.innerHTML = `<a href="${json.url}">Download export</a>`;
+            result.innerHTML = 'Exported.';
         });
 
         async function wake() {
