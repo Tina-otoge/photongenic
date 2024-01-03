@@ -51,3 +51,7 @@ def generate_thumbnails():
         for file in files:
             file.generate_thumbnail()
         time.sleep(1)
+
+
+if __name__ == "__main__":
+    generate_thumbnails()

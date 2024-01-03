@@ -1,5 +1,4 @@
 import datetime
-import multiprocessing
 from pathlib import Path
 
 import flask
@@ -19,8 +18,6 @@ archive_files = Blueprint(
 
 app.register_blueprint(custom)
 app.register_blueprint(archive_files)
-
-multiprocessing.Process(target=archive.generate_thumbnails).start()
 
 
 @app.context_processor
