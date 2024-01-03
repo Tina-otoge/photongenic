@@ -26,7 +26,7 @@ class File:
             self.thumb_relative = None
 
     def generate_thumbnail(self):
-        if self.thumb:
+        if self.thumb_path.exists():
             return
         subprocess.run(
             "ffmpeg -sseof -60".split()
