@@ -6,8 +6,7 @@
     <h1>Dashboard</h1>
 
     <p>
-        <a class="btn" href="{{ url_for('wake_all') }}">Wake all</a>
-
+        <a class="btn" id="btn-wake-all">Wake all</a>
     </p>
     {% for client in photon.clients.values() %}
     <div class="col s12 m6 l4">
@@ -15,16 +14,20 @@
             {% if client.image %}
             <div class="card-image">
                 <img src="{{ url_for('custom.static', filename=client.image) }}" />
-                <span class="card-title">{{ client.name }} (#{{ client.id }})</span>
+                <span class="card-title">{{ client.name }}</span>
             </div>
             {% else %}
             <div class="card-title">{{ client.name }} (#{{ client.id }})</div>
             {% endif %}
             <div class="card-content">
-                <div class="results">
+                <div class="meta">
+                    <span class="id badge">#{{ client.id }}</span>
+                    <span class="state">
+                        Unknown
+                    </span>
                 </div>
-                <div class="state">
-                    Unknown
+
+                <div class="results">
                 </div>
             </div>
             <div class="card-action">
@@ -38,6 +41,14 @@
 
 </div>
 <script>
+    let wakers = [];
+
+    document.querySelector('#btn-wake-all').addEventListener('click', () => {
+        for (let waker of wakers) {
+            waker();
+        }
+    });
+
     for (let client of document.querySelectorAll('.client')) {
         let result = client.querySelector('.results');
         let state = client.querySelector('.state');
@@ -48,10 +59,14 @@
             result.innerHTML = `<a href="${json.url}">Download export</a>`;
         });
 
-        client.querySelector('.wake').addEventListener('click', async () => {
+        async function wake() {
             result.innerHTML = 'Waking up...';
             let response = await fetch(`${client.dataset.id}/wake`, { method: 'POST' });
-        });
+            result.innerHTML = 'Signal sent';
+        }
+        wakers.push(wake);
+
+        client.querySelector('.wake').addEventListener('click', wake);
 
         let refresh = async () => {
             setTimeout(refresh, 5000);

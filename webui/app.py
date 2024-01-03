@@ -36,6 +36,17 @@ def status(id):
     return client.status
 
 
+@app.get("/<int:id>/preview")
+def preview(id):
+    return flask.render_template("preview.html.j2", client=photon.clients[id])
+
+
+@app.get("/<int:id>/preview.png")
+def get_preview_frame(id):
+    client: photon.Client = photon.clients[id]
+    # return client.client.
+
+
 @app.post("/<int:id>/export")
 def export(id):
     client: photon.Client = photon.clients[id]
@@ -67,13 +78,6 @@ def wake(id):
     return {
         "success": client.client is not None,
     }
-
-
-@app.post("/wake_all")
-def wake_all():
-    for client in photon.clients.values():
-        client.start()
-    return OK
 
 
 @app.get("/archive")
