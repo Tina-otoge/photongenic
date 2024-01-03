@@ -1,4 +1,5 @@
 import datetime
+import multiprocessing
 from pathlib import Path
 
 import flask
@@ -18,6 +19,8 @@ archive_files = Blueprint(
 
 app.register_blueprint(custom)
 app.register_blueprint(archive_files)
+
+multiprocessing.Process(target=archive.generate_thumbnails).start()
 
 
 @app.context_processor
@@ -88,20 +91,3 @@ def wake(id):
 def get_archive():
     files = archive.get_files()
     return flask.render_template("archive.html.j2", files=files)
-
-
-import multiprocessing
-import time
-
-
-@app.before_first_request
-def run_thumbnails_generator():
-    def generate_thumbnails():
-        while True:
-            files = archive.get_files()
-            for file in files:
-                file.generate_thumbnail()
-            time.sleep(10)
-
-    process = multiprocessing.Process(target=generate_thumbnails)
-    process.start()

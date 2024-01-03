@@ -1,4 +1,5 @@
 import subprocess
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -42,3 +43,11 @@ def get_files():
             file = File(p)
             files.append(file)
     return sorted(files, key=lambda f: f.date, reverse=True)
+
+
+def generate_thumbnails():
+    while True:
+        files = get_files()
+        for file in files:
+            file.generate_thumbnail()
+        time.sleep(10)
