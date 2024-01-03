@@ -17,10 +17,10 @@ class File:
         # self.date = path.stat().st_mtime
         self.date = datetime.fromtimestamp(path.stat().st_mtime)
         self.group = path.parent.name
-        thumb_path = path.with_suffix(".png")
-        if thumb_path.exists():
-            self.thumb = thumb_path
-            self.thumb_relative = thumb_path.relative_to(File.DIR)
+        self.thumb_path = path.with_suffix(".png")
+        if self.thumb_path.exists():
+            self.thumb = self.thumb_path
+            self.thumb_relative = self.thumb_path.relative_to(File.DIR)
         else:
             self.thumb = None
             self.thumb_relative = None
@@ -32,7 +32,7 @@ class File:
             "ffmpeg -sseof -60".split()
             + ["-i", str(self.path)]
             + "-vf thumbnail -y -update true".split()
-            + [str(self.thumb)]
+            + [str(self.thumb_path)]
         )
 
 
@@ -50,4 +50,4 @@ def generate_thumbnails():
         files = get_files()
         for file in files:
             file.generate_thumbnail()
-        time.sleep(10)
+        time.sleep(1)
