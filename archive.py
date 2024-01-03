@@ -28,6 +28,8 @@ class File:
     def generate_thumbnail(self):
         if self.thumb_path.exists():
             return
+        with self.thumb_path.open("w") as f:
+            f.write("")
         subprocess.run(
             "ffmpeg -sseof -60".split()
             + ["-i", str(self.path)]
