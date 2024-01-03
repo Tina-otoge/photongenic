@@ -26,7 +26,7 @@ class File:
         subprocess.run(
             "ffmpeg -sseof -60".split()
             + ["-i", str(self.path)]
-            + "-vf thumbnail -y -frames:v 1".split()
+            + "-vf thumbnail -y -update true".split()
             + [str(self.thumb)]
         )
         if not self.thumb.exists():
