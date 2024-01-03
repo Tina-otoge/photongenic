@@ -25,13 +25,13 @@ Valid attributes are:
 - `timeout` (default 5)
 - `replay` (default true), setting this to false will disable auto-starting the
   Replay Buffer on the client
-- `name` (default "Client"), the only purpose is to help with debugging
+- `name` (default "Client"), this helps identifying which client is what
 - `collection` (default "Photon"), if a Scenes Collection with this name exists
-  in the client, the client will switch to it right after connecting
-- `scene` (default "Photon"), if a Scene witht his name exists in the client,
-  the client will switch to it right after connecting
+  in the client's OBS, the client will switch to it right after connecting
+- `scene` (default "Photon"), if a Scene witht his name exists in the client's,
+  OBS, the client will switch to it right after connecting
 - `image` (default: None), a custom image placed in the "custom" folder at the
-  same level than the app root
+  same level than the app root to customize the Web UI
 
 You must define the output directory where replays exported from OBS end. This
 does not configure OBS. This only tells PHOTONGENIC where to search for files so
