@@ -29,7 +29,8 @@ class File:
         if self.thumb_path.exists():
             return
         with self.thumb_path.open("w") as f:
-            f.write("")
+            now = datetime.now().isoformat()
+            f.write(f"Generating {now}")
         subprocess.run(
             "ffmpeg -sseof -60".split()
             + ["-i", str(self.path)]
@@ -49,8 +50,7 @@ def get_files():
 
 def generate_thumbnails():
     while True:
-        files = get_files()
-        for file in files:
+        for file in get_files():
             file.generate_thumbnail()
         time.sleep(1)
 
