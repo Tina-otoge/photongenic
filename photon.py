@@ -23,7 +23,7 @@ class Client:
     count = 0
 
     def __post_init__(self):
-        self.count += 1
+        self.__class__.count += 1
         self.id = self.count
         self.client = None
 
