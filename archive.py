@@ -16,12 +16,16 @@ class File:
         # self.date = path.stat().st_mtime
         self.date = datetime.fromtimestamp(path.stat().st_mtime)
         self.group = path.parent.name
-        self.thumb = self.path.with_suffix(".png")
-        self.thumb_relative = self.thumb.relative_to(File.DIR)
-        self.ensure_thumbnail()
+        thumb_path = path.with_suffix(".png")
+        if thumb_path.exists():
+            self.thumb = thumb_path
+            self.thumb_relative = thumb_path.relative_to(File.DIR)
+        else:
+            self.thumb = None
+            self.thumb_relative = None
 
-    def ensure_thumbnail(self):
-        if self.thumb and self.thumb.exists():
+    def generate_thumbnail(self):
+        if self.thumb:
             return
         subprocess.run(
             "ffmpeg -sseof -60".split()
@@ -29,8 +33,6 @@ class File:
             + "-vf thumbnail -y -update true".split()
             + [str(self.thumb)]
         )
-        if not self.thumb.exists():
-            self.thumb = None
 
 
 def get_files():
