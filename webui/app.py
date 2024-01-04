@@ -48,7 +48,7 @@ def get_preview_frame(id):
         client.client.get_current_program_scene().current_program_scene_name
     )
     encoded_base64_image = client.client.get_source_screenshot(
-        source, "png", None, None, None
+        source, "jpeg", None, None, None
     ).image_data
     return encoded_base64_image
 
