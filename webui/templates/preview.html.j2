@@ -16,8 +16,12 @@ async function refreshImage() {
     try {
         let img = document.getElementById('preview');
         let response = await fetch('preview/frame');
+        if (!response.ok) {
+            throw new Error();
+        }
         let base64 = await response.text();
         img.src = base64;
+    } catch (e) {
     } finally {
         setTimeout(refreshImage, 2000);
     }

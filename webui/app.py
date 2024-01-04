@@ -44,6 +44,8 @@ def preview(id):
 @app.get("/<int:id>/preview/frame")
 def get_preview_frame(id):
     client: photon.Client = photon.clients[id]
+    if not client.client:
+        return flask.abort(400)
     source = (
         client.client.get_current_program_scene().current_program_scene_name
     )
@@ -56,6 +58,8 @@ def get_preview_frame(id):
 @app.post("/<int:id>/export")
 def export(id):
     client: photon.Client = photon.clients[id]
+    if not client.client:
+        return flask.abort(400)
     client.client.save_replay_buffer()
     replay_path = (
         client.client.get_last_replay_buffer_replay().saved_replay_path

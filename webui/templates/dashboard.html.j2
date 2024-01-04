@@ -58,13 +58,22 @@
             let response = await fetch(`${client.dataset.id}/export`, { method: 'POST' });
             // let json = await response.json();
             // result.innerHTML = `<a href="${json.url}">Download export</a>`;
-            result.innerHTML = 'Exported.';
+            if (!response.ok)
+                result.innerHTML = 'Could not export.';
+            else
+                result.innerHTML = 'Exported.';
         });
 
         async function wake() {
             result.innerHTML = 'Waking up...';
-            let response = await fetch(`${client.dataset.id}/wake`, { method: 'POST' });
-            result.innerHTML = 'Signal sent';
+            try {
+                let response = await fetch(`${client.dataset.id}/wake`, { method: 'POST' });
+                if (!response.ok)
+                    throw new Error();
+                result.innerHTML = (await response.json()).status ? 'Success.' : 'Failure.';
+            } catch (e) {
+                result.innerHTML = 'Error sending signal';
+            }
         }
         wakers.push(wake);
 
@@ -72,18 +81,23 @@
 
         let refresh = async () => {
             setTimeout(refresh, 5000);
-
-            let response = await fetch(`${client.dataset.id}/`);
-            let json = await response.json();
-            // result.innerHTML = `<code>${JSON.stringify(json)}</code>`;
-            client.classList.remove('inactive');
-            client.classList.remove('active');
-            if (json.active) {
-                state.innerHTML = 'Running';
-                client.classList.add('active');
-            } else {
-                state.innerHTML = 'Not running';
-                client.classList.add('inactive');
+            let active = false;
+            let state_text = '';
+            try {
+                let response = await fetch(`${client.dataset.id}/`);
+                if (!response.ok)
+                    throw new Error();
+                let json = await response.json();
+                // result.innerHTML = `<code>${JSON.stringify(json)}</code>`;
+                active = json.active;
+                state_text = active ? 'Running' : 'Inactive';
+            } catch (e) {
+                state_text = 'Unreachable';
+            } finally {
+                client.classList.remove('inactive');
+                client.classList.remove('active');
+                client.classList.add(active ? 'active' : 'inactive');
+                state.innerHTML = state_text;
             }
         };
         refresh();

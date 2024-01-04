@@ -1,4 +1,5 @@
 import dataclasses
+import socket
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -36,7 +37,12 @@ class Client:
                 password=self.password,
                 timeout=self.timeout,
             )
-        except (TimeoutError, WebSocketAddressException) as e:
+        except (
+            TimeoutError,
+            WebSocketAddressException,
+            socket.timeout,
+            OSError,
+        ) as e:
             print(f"Could not establish connection to {self}: {e}")
             return
         if (

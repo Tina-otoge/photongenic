@@ -28,7 +28,9 @@ img {
     color: darkred;
 }
 
-.client.inactive .preview {
+.client.inactive .preview,
+.client.inactive .export
+ {
     display: none;
 }
 
