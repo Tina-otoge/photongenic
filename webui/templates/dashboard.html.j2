@@ -1,6 +1,13 @@
 {% extends "base.html.j2" %}
 
 {% block content%}
+<style>
+{% if photon.config.get('disable_wake_ui') %}
+#btn-wake-all, .wake {
+    display: none;
+}
+{% endif %}
+</style>
 <div class="row">
 
     <h1>Dashboard</h1>
@@ -8,36 +15,38 @@
     <p>
         <a class="btn" id="btn-wake-all">Wake all</a>
     </p>
-    {% for client in photon.clients.values() %}
-    <div class="col s12 m6 l4">
-        <div class="client card" data-id="{{ client.id }}">
-            {% if client.image %}
-            <div class="card-image">
-                <img src="{{ url_for('custom.static', filename=client.image) }}" />
-                <span class="card-title">{{ client.name }}</span>
-            </div>
-            {% else %}
-            <div class="card-title">{{ client.name }} (#{{ client.id }})</div>
-            {% endif %}
-            <div class="card-content">
-                <div class="meta">
-                    <span class="id badge">#{{ client.id }}</span>
-                    <span class="state">
-                        Unknown
-                    </span>
+    <div class="grid">
+        {% for client in photon.clients.values() %}
+        <div class="col s12 m6 l4">
+            <div class="client card" data-id="{{ client.id }}">
+                {% if client.image %}
+                <div class="card-image">
+                    <img src="{{ url_for('custom.static', filename=client.image) }}" />
+                    <span class="card-title">{{ client.name }}</span>
                 </div>
+                {% else %}
+                <div class="card-title">{{ client.name }} (#{{ client.id }})</div>
+                {% endif %}
+                <div class="card-content">
+                    <div class="meta">
+                        <span class="id badge">#{{ client.id }}</span>
+                        <span class="state">
+                            Unknown
+                        </span>
+                    </div>
 
-                <div class="results">
+                    <div class="results">
+                    </div>
                 </div>
-            </div>
-            <div class="card-action">
-                <a class="export">Export</a>
-                <a class="wake">Wake</a>
-                <a class="preview" href="{{ url_for('preview', id=client.id) }}">Preview</a>
+                <div class="card-action">
+                    <a class="export">Export</a>
+                    <a class="wake">Wake</a>
+                    <a class="preview" href="{{ url_for('preview', id=client.id) }}">Preview</a>
+                </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 
 </div>
@@ -90,9 +99,9 @@
                 let json = await response.json();
                 // result.innerHTML = `<code>${JSON.stringify(json)}</code>`;
                 active = json.active;
-                state_text = active ? 'Running' : 'Inactive';
+                state_text = active ? 'Running' : 'Offline';
             } catch (e) {
-                state_text = 'Unreachable';
+                state_text = 'Error';
             } finally {
                 client.classList.remove('inactive');
                 client.classList.remove('active');

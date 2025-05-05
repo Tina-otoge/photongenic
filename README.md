@@ -1,6 +1,12 @@
 # photongenic
 
-Project PHOTONGENIC is a service to manage multiple OBS instances through the WebSockets API, with a focus on exporting their Replay Buffer, inspired by aixxe's REPLAY (https://aixxe.net/2023/07/revisiting-replay)
+Project PHOTONGENIC is a service to manage multiple OBS instances through the
+WebSockets API, with a focus on exporting their Replay Buffer, inspired by
+aixxe's REPLAY (https://aixxe.net/2023/07/revisiting-replay)
+
+This is a weekend / rushed project, so quality leaves much to be desired,
+functionality is prioritized over code quality, which is rare for my projects.
+A rewrite might happen at some point, stay tuned!
 
 ## Configuration
 
@@ -25,13 +31,16 @@ Valid attributes are:
 - `timeout` (default 5)
 - `replay` (default true), setting this to false will disable auto-starting the
   Replay Buffer on the client
-- `name` (default "Client"), this helps identifying which client is what
+- `name` (defaults to host), this helps identifying which client is what
+- `group` (default to name), subtitle for the client
 - `collection` (default "Photon"), if a Scenes Collection with this name exists
   in the client's OBS, the client will switch to it right after connecting
 - `scene` (default "Photon"), if a Scene witht his name exists in the client's,
   OBS, the client will switch to it right after connecting
 - `image` (default: None), a custom image placed in the "custom" folder at the
   same level than the app root to customize the Web UI
+
+### `config.toml` file
 
 You must define the output directory where replays exported from OBS end. This
 does not configure OBS. This only tells PHOTONGENIC where to search for files so
@@ -45,6 +54,13 @@ output_local = "/mnt/r/Tinarcade/Replays"
 
 You can put replays in subdirectories, in this case, the latest parent
 directory name will be treated as the "group" for this replay.
+
+`base_uri` (optional): Used to generate path to static files
+
+`audit_webhook` (optional): Webhook URL to send audit logs to
+
+`disable_wake_ui` (obsolete): Removes "wake" buttons from web UI, clients are
+always auto-started now so this is redundant with other methods.
 
 ## Running
 
@@ -70,3 +86,6 @@ FLASK_APP=webui.app flask run --debug
 pip install gunicorn
 gunicorn -w 4 webui.app:app
 ```
+
+Then, you can have another process running thumbnails generation, started using
+`python archive.py`.

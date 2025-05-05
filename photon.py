@@ -1,12 +1,24 @@
-import dataclasses
 import socket
+import typing as t
 from dataclasses import dataclass
 from pathlib import Path
 
 import obsws_python as obs
 import tomli
 import yaml
-from websocket import WebSocketAddressException
+from obsws_python.error import OBSSDKTimeoutError
+from websocket import WebSocketAddressException, WebSocketTimeoutException
+
+import audit
+
+TIMEOUT_ERRORS = (
+    OBSSDKTimeoutError,
+    OSError,
+    socket.timeout,
+    TimeoutError,
+    WebSocketAddressException,
+    WebSocketTimeoutException,
+)
 
 
 @dataclass
@@ -16,7 +28,8 @@ class Client:
     port: int = 4455
     timeout: int = 5
     replay: bool = True
-    name: str = "Client"
+    name: str = None
+    group: str = None
     collection: str = "Photon"
     scene: str = "Photon"
     image: str = None
@@ -27,7 +40,14 @@ class Client:
         self.__class__.count += 1
         self.id = self.count
         self.client = None
+        self.name = self.name or self.host
+        self.group = self.group or self.name
         self.start()
+
+    def __str__(self):
+        if self.name != self.group:
+            return f"{self.name} ({self.group})"
+        return self.name
 
     def start(self):
         try:
@@ -37,13 +57,12 @@ class Client:
                 password=self.password,
                 timeout=self.timeout,
             )
-        except (
-            TimeoutError,
-            WebSocketAddressException,
-            socket.timeout,
-            OSError,
-        ) as e:
-            print(f"Could not establish connection to {self}: {e}")
+        except TIMEOUT_ERRORS:
+            return
+        try:
+            self.client.get_replay_buffer_status()
+        except Exception as e:
+            audit.log(f"Could not get replay buffer status: {e}")
             return
         if (
             self.replay
@@ -60,17 +79,22 @@ class Client:
             x["sceneName"] for x in self.client.get_scene_list().scenes
         ]:
             self.client.set_current_program_scene(self.scene)
+        audit.log("Connected to", self.name)
 
     @property
-    def status(self) -> dict:
+    def status(self) -> bool:
         if not self.client:
-            active = False
-        else:
+            return False
+        try:
             active = self.client.get_replay_buffer_status().output_active
-        return dict(
-            **dataclasses.asdict(self),
-            active=active,
-        )
+        except TIMEOUT_ERRORS as e:
+            audit.log(
+                f'Could not get replay buffer status for {self}: "{e}".'
+                "\nMarking client as offline."
+            )
+            self.client = None
+            return False
+        return bool(active)
 
 
 class Config:
@@ -96,3 +120,17 @@ with CLIENTS_FILE.open() as f:
     clients = {
         c.id: c for c in (Client(**client) for client in yaml.safe_load(f))
     }
+
+
+def get_client(id) -> t.Optional[Client]:
+    if id not in clients:
+        return None
+    client = clients[id]
+    if not client.status:
+        client.start()
+    return client
+
+
+if __name__ == "__main__":
+    for client in clients.values():
+        print(client.status)
