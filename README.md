@@ -39,6 +39,7 @@ Valid attributes are:
   OBS, the client will switch to it right after connecting
 - `image` (default: None), a custom image placed in the "custom" folder at the
   same level than the app root to customize the Web UI
+- `description` (default: None), additional description to display on the Web UI for this client
 
 ### `config.toml` file
 

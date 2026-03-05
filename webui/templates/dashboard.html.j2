@@ -29,6 +29,9 @@
                 {% endif %}
                 <div class="card-content">
                     <div class="meta">
+                        {% if client.description %}
+                        <p class="grey-text">{{ client.description }}</p>
+                        {% endif %}
                         <span class="id badge">#{{ client.id }}</span>
                         <span class="state">
                             Unknown

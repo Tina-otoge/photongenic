@@ -33,6 +33,7 @@ class Client:
     collection: str = "Photon"
     scene: str = "Photon"
     image: str = None
+    description: str = None
 
     count = 0
 
