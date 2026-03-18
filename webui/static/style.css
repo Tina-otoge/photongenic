@@ -6,9 +6,45 @@ a {
     cursor: pointer;
 }
 
-img {
+img, video {
     max-width: 100%;
 }
+
+#video-editor video {
+    max-height: calc(70vh - 3em);
+}
+
+.tc-label .tc-now {
+    margin-left: 2em;
+    font-size: 0.85em;
+}
+
+
+
+.tc-inputs {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tc-inputs input {
+    display: inline-block;
+    width: auto;
+    margin: 0;
+}
+
+.tc-inputs input::-webkit-outer-spin-button,
+.tc-inputs input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.tc-inputs input[type=number] {
+    appearance: textfield;
+}
+
+.tc-inputs .tc-min { width: 3.5em; }
+.tc-inputs .tc-sec { width: 3.5em; }
+.tc-inputs .tc-ms  { width: 4.5em; }
 
 .grid {
     display: flex;

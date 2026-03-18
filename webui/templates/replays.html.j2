@@ -19,6 +19,7 @@
                     <p data-time="{{ file.date }}">{{ file.date }}</p>
                     <p>{{ file.group }}</p>
                     <a href="{{ url_for('replays.static', filename=file.relative) }}" class="btn">Download</a>
+                    <a href="{{ url_for('video_editor', filename=file.relative) }}" class="btn">Edit</a>
                 </div>
             </div>
         </div>

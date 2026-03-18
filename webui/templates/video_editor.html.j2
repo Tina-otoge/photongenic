@@ -1,0 +1,75 @@
+{% extends "base.html.j2" %}
+
+{% block content %}
+<div id="video-editor">
+    <h1>Video Editor</h1>
+    <p>{{ filename }}</p>
+    <video id="player" src="{{ video_url }}" controls></video>
+    <div id="trim-controls" class="row">
+        <div class="col s6 m5">
+            <p class="tc-label">Start <a href="#" class="tc-now" data-prefix="start">use current time</a></p>
+            <div class="tc-inputs">
+                <input type="number" class="tc-min" id="start-m" min="0" value="0">
+                <span>:</span>
+                <input type="number" class="tc-sec" id="start-s" min="0" max="59" value="0">
+                <span>.</span>
+                <input type="number" class="tc-ms" id="start-ms" min="0" max="999" value="0">
+            </div>
+        </div>
+        <div class="col s6 m5">
+            <p class="tc-label">End <a href="#" class="tc-now" data-prefix="end">use current time</a></p>
+            <div class="tc-inputs">
+                <input type="number" class="tc-min" id="end-m" min="0" value="0">
+                <span>:</span>
+                <input type="number" class="tc-sec" id="end-s" min="0" max="59" value="0">
+                <span>.</span>
+                <input type="number" class="tc-ms" id="end-ms" min="0" max="999" value="0">
+            </div>
+        </div>
+        <div class="col s12 m2">
+            <p class="tc-label">&nbsp;</p>
+            <button class="btn" id="btn-download">Download</button>
+        </div>
+    </div>
+    <script>
+        function blockNonDigits(e) {
+            if (!e.key.match(/^[0-9]$/) && !['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                e.preventDefault();
+            }
+        }
+        document.querySelectorAll('#trim-controls input').forEach(el => el.addEventListener('keydown', blockNonDigits));
+
+        const video = document.getElementById('player');
+
+        function fillTimecode(prefix, seconds) {
+            document.getElementById(prefix + '-m').value = Math.floor(seconds / 60);
+            document.getElementById(prefix + '-s').value = Math.floor(seconds % 60);
+            document.getElementById(prefix + '-ms').value = Math.round((seconds % 1) * 1000);
+        }
+
+        document.querySelectorAll('.tc-now').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                fillTimecode(link.dataset.prefix, video.currentTime);
+            });
+        });
+
+        video.addEventListener('loadedmetadata', () => fillTimecode('end', video.duration));
+
+        function readTimecode(prefix) {
+            const m  = parseInt(document.getElementById(prefix + '-m').value)  || 0;
+            const s  = parseInt(document.getElementById(prefix + '-s').value)  || 0;
+            const ms = parseInt(document.getElementById(prefix + '-ms').value) || 0;
+            return m * 60 + s + ms / 1000;
+        }
+
+        document.getElementById('btn-download').addEventListener('click', () => {
+            const params = new URLSearchParams({
+                start: readTimecode('start'),
+                end:   readTimecode('end'),
+            });
+            window.location.href = window.location.pathname + '/download?' + params;
+        });
+    </script>
+</div>
+{% endblock %}

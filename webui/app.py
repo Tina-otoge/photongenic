@@ -1,3 +1,5 @@
+import subprocess
+import tempfile
 from pathlib import Path
 
 import flask
@@ -88,3 +90,58 @@ def wake(id):
 def replays():
     files = archive.get_files()
     return flask.render_template("replays.html.j2", files=files)
+
+
+@app.get("/edit/<path:filename>")
+def video_editor(filename):
+    video_url = flask.url_for("replays.static", filename=filename)
+    return flask.render_template(
+        "video_editor.html.j2", video_url=video_url, filename=filename
+    )
+
+
+@app.get("/edit/<path:filename>/download")
+def video_editor_download(filename):
+    try:
+        start = float(flask.request.args["start"])
+        end = float(flask.request.args["end"])
+    except (KeyError, ValueError):
+        return flask.abort(400)
+
+    source = archive.File.DIR / filename
+    if not source.resolve().is_relative_to(archive.File.DIR.resolve()):
+        return flask.abort(400)
+    if not source.exists():
+        return flask.abort(404)
+
+    suffix = source.suffix
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+        tmp_path = Path(tmp.name)
+
+    try:
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-y",
+                "-ss",
+                str(start),
+                "-to",
+                str(end),
+                "-i",
+                str(source),
+                "-c",
+                "copy",
+                str(tmp_path),
+            ],
+            check=True,
+            capture_output=True,
+        )
+        data = tmp_path.read_bytes()
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+    return flask.Response(
+        data,
+        mimetype="video/" + suffix.lstrip("."),
+        headers={"Content-Disposition": f"attachment; filename={source.name}"},
+    )
